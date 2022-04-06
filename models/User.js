@@ -6,7 +6,6 @@ const userSchema = new Schema({
   password: String,
   email: String,
   createdAt: String,
-  journals: [{ type: Schema.Types.ObjectId, ref: "journals" }]
 });
 
 module.exports = model('User', userSchema);

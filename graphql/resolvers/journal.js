@@ -1,5 +1,5 @@
-const { AuthenticationError } = require('apollo-server');
-
+const { AuthenticationError,UserInputError } = require('apollo-server');
+const {validateJournal} = require("../../util/validators")
 const Journal = require('../../models/Journal');
 const checkAuth = require('../../util/check-auth');
 
@@ -16,9 +16,9 @@ module.exports = {
       }
     },
     //--------------------------------Get 1 Journal----------------------------------
-    async getJournal(_, { journalId }) {
+    async getJournal(_, { issn }) {
       try {
-        const journal = await Journal.findById(journalId);
+        const journal = await Journal.findOne({issn});
         if (journal) {
           return journal;
         } else {
@@ -30,32 +30,92 @@ module.exports = {
     },
   },
   Mutation: {
-    async createJournal(_, { body }, context) {
+    async createJournal(_, { journalInput: { title, issn, rating, url  } }, context) {
+      const { valid, errors } = validateJournal(
+        title,
+        url,
+        issn,
+        rating,
+        
+      );
+      if (!valid) {
+        throw new UserInputError('Errors', { errors });
+      }
+      const check = await Journal.findOne({issn});
+      if (check) {
+        throw new UserInputError('Issn should be unique', {
+          errors: {
+            issn: 'This Issn is already present'
+          }
+        });
+      }
       const user = checkAuth(context);
       const newJournal = new Journal({
-        body,
-        user: user.id,
-        username: user.username,
+        title,
+        issn,
+        rating,
+        url,
         createdAt: new Date().toISOString()
       });
-
+      newJournal.postedBy = user.id;
+      
       const journal = await newJournal.save();
-
       return journal;
     },
-    async deleteJournal(_, { journalId }, context) {
+    async deleteJournal(_, { issn }, context) {
       const user = checkAuth(context);
-
+      const check = await Journal.findOne({issn});
+      if (!check) {
+        throw new UserInputError('Journal with this issn is not present', {
+          errors: {
+            issn: 'Journal with this issn is not present'
+          }
+        });
+      }
       try {
-        const journal = await Journal.findById(journalId)
-
-        if (user.username === journal.username) {
+        const journal = await Journal.findOne({issn}).populate({path:"postedBy"})
+        if (user.username === journal.postedBy.username) {
           await journal.delete();
           return 'Journal deleted successfully';
         } else {
           throw new AuthenticationError('Action not allowed');
         }
       } catch (err) {
+        throw new Error(err);
+      }
+    },
+    async updateJournal(_,{ journalInput: { title, issn, rating, url  }},context)
+    {
+      const { valid, errors } = validateJournal(
+        title,
+        issn,
+        rating,
+        url
+      );
+      if (!valid) {
+        throw new UserInputError('Errors', { errors });
+      }
+      const check = await Journal.findOne({issn});
+      if (!check) {
+        throw new UserInputError('Journal with this issn is not present', {
+          errors: {
+            issn: 'Journal with this issn is not present'
+          }
+        });
+      }
+      const user = checkAuth(context);
+      const updatedJournal = { title, url, rating};
+
+      try{
+        const journal = await Journal.findOne({issn}).populate({path:"postedBy"})
+          if (user.username === journal.postedBy.username) {
+          const Newjournal = Journal.findOneAndUpdate({issn},updatedJournal,{ new: true });
+          return  Newjournal;
+        } else {
+          throw new AuthenticationError('Action not allowed');
+        }
+
+      }catch (err) {
         throw new Error(err);
       }
     }

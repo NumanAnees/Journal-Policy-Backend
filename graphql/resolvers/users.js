@@ -5,10 +5,10 @@ const {
   validateRegisterInput,
   validateLoginInput
 } = require('../../util/validators');
-
 const { SECRET_KEY } = require('../../config');
 const User = require('../../models/User');
 const Journal = require('../../models/Journal');
+const checkAuth = require('../../util/check-auth');
 
 function generateToken(user) {
   return jwt.sign(
@@ -18,17 +18,18 @@ function generateToken(user) {
       username: user.username
     },
     SECRET_KEY,
-    { expiresIn: '1h' }
+    { expiresIn: '1d' }
   );
 }
 
 module.exports = {
   Query:{
-   async getUser(_,{userId}){
+   async getUserJournals(_,__,context){
+      const user = checkAuth(context);
       try{
-        const user = await User.findById(userId)
-        if (user) {
-          return user;
+        const journal = await Journal.find({postedBy:user.id}).sort({ createdAt: -1 });
+        if (journal) {
+          return journal;
         } else {
           throw new Error('User not found');
         }

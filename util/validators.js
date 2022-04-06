@@ -38,3 +38,22 @@ module.exports.validateLoginInput = (username, password) => {
     valid: Object.keys(errors).length < 1
   };
 };
+module.exports.validateJournal = (title,url,issn,rating)=>{
+  const errors = {};
+  if (title.trim() === '') {
+    errors.title = 'title must not be empty';
+  }
+  if (url.trim() === '') {
+    errors.url = 'url must not be empty';
+  }
+   if (issn.trim() === '') {
+    errors.issn = 'issn must not be empty';
+  }
+   if (rating.trim() === '') {
+    errors.rating = 'rating must not be empty';
+  }
+  return {
+    errors,
+    valid: Object.keys(errors).length < 1
+  };
+}

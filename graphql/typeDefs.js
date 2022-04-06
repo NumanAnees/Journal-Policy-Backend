@@ -8,6 +8,7 @@ module.exports = gql`
     Rating: String!
     body: String!
     username:String!
+    postedBy: User!
   }
 type User {
     id: ID!
@@ -15,23 +16,28 @@ type User {
     token: String!
     username: String!
     createdAt: String!
-    journal: [Journal] 
   }
 input RegisterInput {
     username: String!
     password: String!
     email: String!
   }
-
+  input JournalInput{
+    title: String!
+    url: String!
+    rating: String!
+    issn: String!
+  }
   type Query {
-    getUser(userId: ID!): User
+    getUserJournals: [Journal]
     getJournals: [Journal]
-    getJournal(journalId: ID!): Journal
+    getJournal(issn: String!): Journal
   }
   type Mutation {
     register(registerInput: RegisterInput): User!
     login(username: String!, password: String!): User!
-    createJournal(body: String!): Journal!
-    deleteJournal(journalId: ID!): String!
+    createJournal(journalInput: JournalInput): Journal!
+    deleteJournal(issn: String!): String!
+    updateJournal(journalInput: JournalInput): Journal!
   }
 `;

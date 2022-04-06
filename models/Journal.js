@@ -1,12 +1,16 @@
 const { model, Schema } = require('mongoose');
+const { ObjectId } = Schema;
 
 const journalSchema = new Schema({
   title:String,
   username: String,
   url: String,
   issn: String,
-  Rating: String,
-  user: { type: Schema.Types.ObjectId, ref: "users" },
+  rating: String,
+  postedBy: {
+            type: ObjectId,
+            ref: 'User'
+            },
   createdAt: String,
 });
 
