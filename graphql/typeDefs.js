@@ -15,6 +15,7 @@ type User {
     token: String!
     username: String!
     createdAt: String!
+    journal: [Journal] 
   }
 input RegisterInput {
     username: String!
@@ -23,6 +24,7 @@ input RegisterInput {
   }
 
   type Query {
+    getUser(userId: ID!): User
     getJournals: [Journal]
     getJournal(journalId: ID!): Journal
   }

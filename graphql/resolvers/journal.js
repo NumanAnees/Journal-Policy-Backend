@@ -34,7 +34,7 @@ module.exports = {
       const user = checkAuth(context);
       const newJournal = new Journal({
         body,
-        user: user,
+        user: user.id,
         username: user.username,
         createdAt: new Date().toISOString()
       });

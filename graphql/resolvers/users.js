@@ -8,6 +8,7 @@ const {
 
 const { SECRET_KEY } = require('../../config');
 const User = require('../../models/User');
+const Journal = require('../../models/Journal');
 
 function generateToken(user) {
   return jwt.sign(
@@ -22,6 +23,20 @@ function generateToken(user) {
 }
 
 module.exports = {
+  Query:{
+   async getUser(_,{userId}){
+      try{
+        const user = await User.findById(userId)
+        if (user) {
+          return user;
+        } else {
+          throw new Error('User not found');
+        }
+      }catch (err) {
+        throw new Error(err);
+      }
+    }
+  },
   Mutation: {
     //-------------------------------------Login-------------------------------------
     async login(_, { username, password }) {
