@@ -5,7 +5,7 @@ module.exports = gql`
     title: String!
     url: String!
     issn: String!
-    Rating: String!
+    rating: String!
     body: String!
     username:String!
     postedBy: User!
