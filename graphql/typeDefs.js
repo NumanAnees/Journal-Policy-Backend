@@ -35,7 +35,7 @@ input RegisterInput {
   }
   type Mutation {
     register(registerInput: RegisterInput): User!
-    login(username: String!, password: String!): User!
+    login(email: String!, password: String!): User!
     createJournal(journalInput: JournalInput): Journal!
     deleteJournal(issn: String!): String!
     updateJournal(journalInput: JournalInput): Journal!
