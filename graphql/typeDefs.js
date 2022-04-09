@@ -6,18 +6,32 @@ module.exports = gql`
     url: String!
     issn: String!
     rating: String!
-    body: String!
-    username:String!
+    date: String!
+    policies: [Policy]!
+    domain: String!
     postedBy: User!
+    createdAt: String!
   }
-type User {
+  type Policy{
+    title: String
+    first_year: String
+    last_year: String
+    policy_type: String
+  }
+  input policyInput{
+    title: String
+    first_year: String
+    last_year: String
+    policy_type: String
+  }
+  type User {
     id: ID!
     email: String!
     token: String!
     username: String!
     createdAt: String!
   }
-input RegisterInput {
+  input RegisterInput {
     username: String!
     password: String!
     email: String!
@@ -27,6 +41,9 @@ input RegisterInput {
     url: String!
     rating: String!
     issn: String!
+    date: String!
+    policies: policyInput!
+    domain: String!
   }
   type Query {
     getUserJournals: [Journal]

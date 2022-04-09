@@ -30,13 +30,16 @@ module.exports = {
     },
   },
   Mutation: {
-    async createJournal(_, { journalInput: { title, issn, rating, url  } }, context) {
+    async createJournal(_, { journalInput: { title, issn, rating, url,date,policies,domain} }, context) {
+      console.log(policies);
       const { valid, errors } = validateJournal(
         title,
-        url,
         issn,
         rating,
-        
+        url,
+        date,
+        policies,
+        domain
       );
       if (!valid) {
         throw new UserInputError('Errors', { errors });
@@ -55,10 +58,12 @@ module.exports = {
         issn,
         rating,
         url,
+        date,
+        domain,
         createdAt: new Date().toISOString()
       });
       newJournal.postedBy = user.id;
-      
+      newJournal.policies = policies;
       const journal = await newJournal.save();
       return journal;
     },
@@ -84,13 +89,16 @@ module.exports = {
         throw new Error(err);
       }
     },
-    async updateJournal(_,{ journalInput: { title, issn, rating, url  }},context)
+    async updateJournal(_,{ journalInput: { title, issn, rating, url,date,policies,domain}},context)
     {
       const { valid, errors } = validateJournal(
         title,
         issn,
         rating,
-        url
+        url,
+        date,
+        policies,
+        domain
       );
       if (!valid) {
         throw new UserInputError('Errors', { errors });
@@ -104,7 +112,7 @@ module.exports = {
         });
       }
       const user = checkAuth(context);
-      const updatedJournal = { title, url, rating};
+      const updatedJournal = { title, url, rating,date,policies,domain};
 
       try{
         const journal = await Journal.findOne({issn}).populate({path:"postedBy"})

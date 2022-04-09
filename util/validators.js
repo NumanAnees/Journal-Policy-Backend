@@ -38,7 +38,15 @@ module.exports.validateLoginInput = (email, password) => {
     valid: Object.keys(errors).length < 1
   };
 };
-module.exports.validateJournal = (title,url,issn,rating)=>{
+module.exports.validateJournal = ( 
+        title,
+        issn,
+        rating,
+        url,
+        date,
+        policies,
+        domain )=>{
+  const policy = JSON.parse(JSON.stringify(policies));
   const errors = {};
   if (title.trim() === '') {
     errors.title = 'title must not be empty';
@@ -51,6 +59,24 @@ module.exports.validateJournal = (title,url,issn,rating)=>{
   }
    if (rating.trim() === '') {
     errors.rating = 'rating must not be empty';
+  }
+  if (date.trim() === '') {
+    errors.date = 'date must not be empty';
+  }
+  if (domain.trim() === '') {
+    errors.domain = 'domain must not be empty';
+  }
+  if (policy.title.trim() === '') {
+    errors.policy = 'policy title must not be empty';
+  }
+  if (policy.first_year.trim() === '') {
+    errors.policy = 'policy first year must not be empty';
+  }
+  if (policy.last_year.trim() === '') {
+    errors.policy = 'policy last year must not be empty';
+  }
+  if (policy.policy_type.trim() === '') {
+    errors.policy = 'policy type must not be empty';
   }
   return {
     errors,
